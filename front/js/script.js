@@ -1,6 +1,4 @@
-console.log("Hello David");
-
-fetch('http://localhost:3000/api/products')
+fetch("http://localhost:3000/api/products")
 .then(data => {
 return data.json();
 })
@@ -14,33 +12,24 @@ insertProduct(product);
 // }
 
 const itemsEL = document.getElementById("items");
-console.log(itemsEL);
+// console.log(itemsEL);
 
 function insertProduct(products) {
     for (let i = 0; i < products.length; i++) {
-        // const product = products[i];
+        const product = products[i];
         // console.log(product);
-        console.log(products[i]);
+        // console.log(products[i]);
+        const articleELement = document.createElement("article");
+        const anchorElement = document.createElement("a");
+
+        anchorElement.setAttribute("href",`./product.html?id=${product._id}`);
+        articleELement.innerHTML = `
+            <img src="${product.imageUrl}" alt="${product.altTxt}, ${product.name}">
+            <h3 class="productName">${product.name}</h3>
+            <p class="productDescription">${product.description}</p
+            `
+        itemsEL.appendChild(anchorElement);
+        anchorElement.appendChild(articleELement);
     }
 }
 
-const articleELement = document.createElement("article");
-const imgElement = document.createElement("img");
-const h3Element = document.createElement("h3");
-const pElement = document.createElement("p");
-
-h3Element.textContent = "placeholder name"
-pElement.textContent = "This is a placeholder text for the p element."
-
-imgElement.src = ".../product01.jpg"
-imgElement.alt = "Lorem ipsum dolor sit amet, Kanap name1"
-
-articleELement.appendChild(imgElement);
-articleELement.appendChild(h3Element);
-articleELement.appendChild(pElement);
-
-h3Element.classList.add("productName")
-pElement.classList.add("productDescription")
-
-// console.log(imgElement)
-itemsEL.appendChild(articleELement);

@@ -15,6 +15,9 @@ const urlParams = new URLSearchParams(queryString);
 const id = urlParams.get("id");
 
 // console.log(id);
+let color = "";
+const productColor = document.getElementById("colors");
+
 
 function insertProduct(listOfProducts) {
     for (let i = 0; i < listOfProducts.length; i++) {
@@ -25,13 +28,13 @@ function insertProduct(listOfProducts) {
             const productId = document.getElementById("title");
             const productPrice = document.getElementById("price");
             const productDescription = document.getElementById("description");
-            const productColor = document.getElementById("colors");
+            // const productColor = document.getElementById("colors");
             
             productImg.innerHTML = `<img src=${product.imageUrl}>`;
             productId.innerHTML = product.name;
             productPrice.innerHTML = product.price;
             productDescription.innerHTML = product.description;
-            for (let color of product.colors) {
+            for (color of product.colors) {
                 // console.log(color);
                 productColor.innerHTML += `<option value="${color}">${color}</option>`;
             }
@@ -40,17 +43,25 @@ function insertProduct(listOfProducts) {
     }
 }
 
-// const itemImg = document.querySelector(".item__img");
-// const itemId = document.getElementById("title");
-// const itemPrice = document.getElementById("price");
-// const itemDescription = document.getElementById("description");
-// const itemColor = document.getElementById("colors")
+const addToCartButton = document.getElementById("addToCart");
 
-// itemImg.innerHTML = `<img src="../images/logo.png" alt="Photo of a sofa">`
-// itemId.innerHTML = "Product name";
-// itemPrice.innerHTML = "42";
-// itemDescription.innerHTML = "Dis enim malesuada risus sapien gravida nulla nisl arcu.";
-// itemColor.innerHTML += `
-//     <option value="vert">green</option>
-//     <option value="blanc">white</option>
-//     `
+addToCartButton.addEventListener("click", function() {
+    console.log("I have been clicked");
+    const itemQuantity = document.getElementById("quantity").value;
+    // let listOfCartItems = [[id, productColor.value, itemQuantity]];
+    let listOfCartItems = [];
+//    Have to change this bit to check in nested arrays: https://stackoverflow.com/questions/71497427/check-if-value-exists-in-nested-array
+    if (listOfCartItems.includes(id) && listOfCartItems.includes(productColor.value)) {
+        console.log("It includes"); 
+        // Add together only the quantity of those list items
+    } else {
+        // listOfCartItems.push([id, productColor.value, itemQuantity])
+        listOfCartItems.push(id, productColor.value, itemQuantity)
+        console.log(listOfCartItems);  
+    }
+    localStorage.clear();
+    listOfCartItems = JSON.stringify(listOfCartItems);
+    localStorage.setItem("cart-items", listOfCartItems);
+    console.log("Local storage: ",localStorage);
+})
+

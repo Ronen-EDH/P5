@@ -47,3 +47,25 @@ function insertProduct(listOfProducts) {
         }
     }
 }
+
+const users = [["Bob","carpenter",23],["Jack","cook",33],["Grace","teacher",52]];
+
+console.log(users);
+
+for (let i = 0; i < users.length; i++) {
+    console.log(users[i]);
+    const user = users[i];
+    if (user.includes("Grace") && user.includes("teacher")) {
+        console.log("It includes");
+        let lastItemOfList = user[2];
+        user.pop();
+        user.push(lastItemOfList + 1);
+        console.log(user);
+    }
+}
+
+const arrey1 = [1,4,6];
+const arrey2 = [2,1,3];
+
+arrey1.push(arrey2);
+console.log(arrey1);

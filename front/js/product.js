@@ -44,24 +44,48 @@ function insertProduct(listOfProducts) {
 }
 
 const addToCartButton = document.getElementById("addToCart");
+let listOfCartItems = [];
 
 addToCartButton.addEventListener("click", function() {
-    console.log("I have been clicked");
+    // console.log("I have been clicked");
     const itemQuantity = document.getElementById("quantity").value;
     // let listOfCartItems = [[id, productColor.value, itemQuantity]];
-    let listOfCartItems = [];
-//    Have to change this bit to check in nested arrays: https://stackoverflow.com/questions/71497427/check-if-value-exists-in-nested-array
-    if (listOfCartItems.includes(id) && listOfCartItems.includes(productColor.value)) {
-        console.log("It includes"); 
-        // Add together only the quantity of those list items
+    if (listOfCartItems.length === 0) {
+        console.log("Empty list");
+        listOfCartItems.push([id, productColor.value, itemQuantity]);
     } else {
-        // listOfCartItems.push([id, productColor.value, itemQuantity])
-        listOfCartItems.push(id, productColor.value, itemQuantity)
-        console.log(listOfCartItems);  
+        for (let n = 0; n < listOfCartItems.length; n++) {
+            console.log(listOfCartItems[n]);
+            const listOfCartItem = listOfCartItems[n];
+            if (listOfCartItem.includes(id) && listOfCartItem.includes(productColor.value)) {
+                console.log("It includes"); 
+                // Add together only the quantity of those list items
+            } else {
+                console.log("Items: ",listOfCartItems);
+                console.log("Item: ",listOfCartItem);    
+                listOfCartItems.push([id, productColor.value, itemQuantity]);
+
+            }
+        }
     }
-    localStorage.clear();
+            
+    console.log(listOfCartItems);
+    // localStorage.clear();
     listOfCartItems = JSON.stringify(listOfCartItems);
     localStorage.setItem("cart-items", listOfCartItems);
     console.log("Local storage: ",localStorage);
 })
 
+// const users = [["Bob","carpenter",23],["Jack","cook",33],["Grace","teacher",52]];
+
+// for (let i = 0; i < users.length; i++) {
+//     console.log(users[i]);
+//     const user = users[i];
+//     if (user.includes("Grace") && user.includes("teacher")) {
+//         console.log("It includes");
+//         let lastItemOfList = user[2];
+//         user.pop();
+//         user.push(lastItemOfList + 1);
+//         console.log(user);
+//     }
+// }

@@ -45,35 +45,59 @@ function insertProduct(listOfProducts) {
 
 const addToCartButton = document.getElementById("addToCart");
 let listOfCartItems = [];
+// localStorage.clear();
 
 addToCartButton.addEventListener("click", function() {
     // console.log("I have been clicked");
-    const itemQuantity = document.getElementById("quantity").value;
+    let itemQuantity = document.getElementById("quantity").value;
+    itemQuantity = +itemQuantity
+    // console.log(typeof itemQuantity);
     // let listOfCartItems = [[id, productColor.value, itemQuantity]];
     if (listOfCartItems.length === 0) {
-        console.log("Empty list");
+        // console.log("Empty list");
+        // console.log("round: 0")
         listOfCartItems.push([id, productColor.value, itemQuantity]);
+        // This one will not work if there is absolutley anything in local storage :D 
+        if (typeof localStorage != "undefined") {
+            console.log("There is a local storage already: ",localStorage);
+         } else {
+            console.log("No local storage yet");
+        
+         }
     } else {
         for (let n = 0; n < listOfCartItems.length; n++) {
-            console.log(listOfCartItems[n]);
+            console.log("round:", n + 1)
+            // console.log("Current Item: ",listOfCartItems[n]);
+            // console.log("Current color: ",productColor.value)
             const listOfCartItem = listOfCartItems[n];
-            if (listOfCartItem.includes(id) && listOfCartItem.includes(productColor.value)) {
-                console.log("It includes"); 
+            if (listOfCartItem.includes(productColor.value)) {
+            // (listOfCartItem.includes(id) && listOfCartItem.includes(productColor.value))  
+                console.log("It includes");
+                listOfCartItem[2] += itemQuantity;
+                itemQuantity = listOfCartItem[2];
+                listOfCartItem.pop();
+                listOfCartItem.push(itemQuantity);
+                console.log("Current item: ", listOfCartItem);
                 // Add together only the quantity of those list items
-            } else {
-                console.log("Items: ",listOfCartItems);
-                console.log("Item: ",listOfCartItem);    
+                break;
+            } else if(n === listOfCartItems.length - 1) {
+                // console.log("Items: ",listOfCartItems);
+                // console.log("Item: ",listOfCartItem);    
                 listOfCartItems.push([id, productColor.value, itemQuantity]);
-
+                break;
             }
         }
     }
             
     console.log(listOfCartItems);
     // localStorage.clear();
-    listOfCartItems = JSON.stringify(listOfCartItems);
-    localStorage.setItem("cart-items", listOfCartItems);
+    // listOfCartItems = JSON.stringify(listOfCartItems);
+    // localStorage.setItem("cart-items", listOfCartItems);
+    // let cartItemsInLocalStorage = "cart-items";
+    // if (cartItemsInLocalStorage)
+    localStorage.setItem("cart-items", JSON.stringify(listOfCartItems));
     console.log("Local storage: ",localStorage);
+
 })
 
 // const users = [["Bob","carpenter",23],["Jack","cook",33],["Grace","teacher",52]];
@@ -89,3 +113,11 @@ addToCartButton.addEventListener("click", function() {
 //         console.log(user);
 //     }
 // }
+
+// Clicking the button first it should create the first item(as a list, with the id,color and quantity).
+// Next round it should check if the id and color match than stop 
+
+
+// Checking if there is a key in localstorage: if not create one.
+// if not create one.
+// else create the next.

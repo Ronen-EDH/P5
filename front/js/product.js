@@ -58,12 +58,6 @@ addToCartButton.addEventListener("click", function() {
         // console.log("round: 0")
         listOfCartItems.push([id, productColor.value, itemQuantity]);
         // This one will not work if there is absolutley anything in local storage :D 
-        if (typeof localStorage != "undefined") {
-            console.log("There is a local storage already: ",localStorage);
-         } else {
-            console.log("No local storage yet");
-        
-         }
     } else {
         for (let n = 0; n < listOfCartItems.length; n++) {
             console.log("round:", n + 1)
@@ -88,17 +82,26 @@ addToCartButton.addEventListener("click", function() {
             }
         }
     }
-            
+    let numberOfProductSets = 0;        
     console.log(listOfCartItems);
+    if (Object.keys(localStorage).length === 0) {
+        console.log("Local storage is empty");
+        localStorage.setItem("cart-items", JSON.stringify(listOfCartItems));
+    
+    } else {
+        console.log(("Local storage is not empty: "), localStorage);
+    }
     // localStorage.clear();
     // listOfCartItems = JSON.stringify(listOfCartItems);
     // localStorage.setItem("cart-items", listOfCartItems);
-    // let cartItemsInLocalStorage = "cart-items";
-    // if (cartItemsInLocalStorage)
     localStorage.setItem("cart-items", JSON.stringify(listOfCartItems));
     console.log("Local storage: ",localStorage);
 
+    // let cartItemsInLocalStorage = "cart-items";
+    // if (cartItemsInLocalStorage)
 })
+
+
 
 // const users = [["Bob","carpenter",23],["Jack","cook",33],["Grace","teacher",52]];
 
@@ -121,3 +124,6 @@ addToCartButton.addEventListener("click", function() {
 // Checking if there is a key in localstorage: if not create one.
 // if not create one.
 // else create the next.
+
+// I either need to refactor the code to put each item right away into the local storage with separate keys or option2 keys only / product page which means nested list
+// I have to refactor because what if someone goes back to the same product from the cart and than want to add products, I'm noly checking the listOfCartItems if they got same ID-s which'll be empty at that point...

@@ -44,10 +44,14 @@ function insertProduct(listOfProducts) {
 }
 
 const addToCartButton = document.getElementById("addToCart");
-let listOfCartItems = [];
+// let listOfCartItems = [];
 // localStorage.clear();
 
 addToCartButton.addEventListener("click", function() {
+    let cartItemsInLocalStorage = localStorage.getItem("cart-items")
+    // console.log(cartItemsInLocalStorage);
+    let listOfCartItems = JSON.parse(cartItemsInLocalStorage)??[];
+    console.log(listOfCartItems);
     // console.log("I have been clicked");
     let itemQuantity = document.getElementById("quantity").value;
     itemQuantity = +itemQuantity
@@ -119,11 +123,3 @@ addToCartButton.addEventListener("click", function() {
 
 // Clicking the button first it should create the first item(as a list, with the id,color and quantity).
 // Next round it should check if the id and color match than stop 
-
-
-// Checking if there is a key in localstorage: if not create one.
-// if not create one.
-// else create the next.
-
-// I either need to refactor the code to put each item right away into the local storage with separate keys or option2 keys only / product page which means nested list
-// I have to refactor because what if someone goes back to the same product from the cart and than want to add products, I'm noly checking the listOfCartItems if they got same ID-s which'll be empty at that point...

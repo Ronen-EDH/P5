@@ -44,24 +44,82 @@ function insertProduct(listOfProducts) {
 }
 
 const addToCartButton = document.getElementById("addToCart");
+// let listOfCartItems = [];
+// localStorage.clear();
 
 addToCartButton.addEventListener("click", function() {
-    console.log("I have been clicked");
-    const itemQuantity = document.getElementById("quantity").value;
+    let cartItemsInLocalStorage = localStorage.getItem("cart-items")
+    // console.log(cartItemsInLocalStorage);
+    let listOfCartItems = JSON.parse(cartItemsInLocalStorage)??[];
+    console.log(listOfCartItems);
+    // console.log("I have been clicked");
+    let itemQuantity = document.getElementById("quantity").value;
+    itemQuantity = +itemQuantity
+    // console.log(typeof itemQuantity);
     // let listOfCartItems = [[id, productColor.value, itemQuantity]];
-    let listOfCartItems = [];
-//    Have to change this bit to check in nested arrays: https://stackoverflow.com/questions/71497427/check-if-value-exists-in-nested-array
-    if (listOfCartItems.includes(id) && listOfCartItems.includes(productColor.value)) {
-        console.log("It includes"); 
-        // Add together only the quantity of those list items
+    if (listOfCartItems.length === 0) {
+        // console.log("Empty list");
+        // console.log("round: 0")
+        listOfCartItems.push([id, productColor.value, itemQuantity]);
+        // This one will not work if there is absolutley anything in local storage :D 
     } else {
-        // listOfCartItems.push([id, productColor.value, itemQuantity])
-        listOfCartItems.push(id, productColor.value, itemQuantity)
-        console.log(listOfCartItems);  
+        for (let n = 0; n < listOfCartItems.length; n++) {
+            console.log("round:", n + 1)
+            // console.log("Current Item: ",listOfCartItems[n]);
+            // console.log("Current color: ",productColor.value)
+            const listOfCartItem = listOfCartItems[n];
+            if (listOfCartItem.includes(productColor.value)) {
+            // (listOfCartItem.includes(id) && listOfCartItem.includes(productColor.value))  
+                console.log("It includes");
+                listOfCartItem[2] += itemQuantity;
+                itemQuantity = listOfCartItem[2];
+                listOfCartItem.pop();
+                listOfCartItem.push(itemQuantity);
+                console.log("Current item: ", listOfCartItem);
+                // Add together only the quantity of those list items
+                break;
+            } else if(n === listOfCartItems.length - 1) {
+                // console.log("Items: ",listOfCartItems);
+                // console.log("Item: ",listOfCartItem);    
+                listOfCartItems.push([id, productColor.value, itemQuantity]);
+                break;
+            }
+        }
     }
-    localStorage.clear();
-    listOfCartItems = JSON.stringify(listOfCartItems);
-    localStorage.setItem("cart-items", listOfCartItems);
+    let numberOfProductSets = 0;        
+    console.log(listOfCartItems);
+    if (Object.keys(localStorage).length === 0) {
+        console.log("Local storage is empty");
+        localStorage.setItem("cart-items", JSON.stringify(listOfCartItems));
+    
+    } else {
+        console.log(("Local storage is not empty: "), localStorage);
+    }
+    // localStorage.clear();
+    // listOfCartItems = JSON.stringify(listOfCartItems);
+    // localStorage.setItem("cart-items", listOfCartItems);
+    localStorage.setItem("cart-items", JSON.stringify(listOfCartItems));
     console.log("Local storage: ",localStorage);
+
+    // let cartItemsInLocalStorage = "cart-items";
+    // if (cartItemsInLocalStorage)
 })
 
+
+
+// const users = [["Bob","carpenter",23],["Jack","cook",33],["Grace","teacher",52]];
+
+// for (let i = 0; i < users.length; i++) {
+//     console.log(users[i]);
+//     const user = users[i];
+//     if (user.includes("Grace") && user.includes("teacher")) {
+//         console.log("It includes");
+//         let lastItemOfList = user[2];
+//         user.pop();
+//         user.push(lastItemOfList + 1);
+//         console.log(user);
+//     }
+// }
+
+// Clicking the button first it should create the first item(as a list, with the id,color and quantity).
+// Next round it should check if the id and color match than stop 

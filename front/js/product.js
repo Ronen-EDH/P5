@@ -1,3 +1,4 @@
+// Get data from API, convert it with json()method for js to read, when that's done run "insertProduct" function with the converted data
 fetch("http://localhost:3000/api/products")
 .then(data => {
 return data.json();
@@ -18,7 +19,9 @@ const id = urlParams.get("id");
 let color = "";
 const productColor = document.getElementById("colors");
 
-
+/* Loop through all the items of the API product table.
+If the ID of a product from the API maches the ID placed/found in the Query String
+use that item details like: title,price,description from the API and insert it to the premade div's in the HTML.*/
 function insertProduct(listOfProducts) {
     for (let i = 0; i < listOfProducts.length; i++) {
         const product = listOfProducts[i];

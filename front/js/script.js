@@ -16,8 +16,8 @@ function anonymousFunction(product) {
 const itemsEL = document.getElementById("items");
 // console.log(itemsEL);
 
-/* Loop through all the elements of listOfProducts.
-For each element create a HTML "a" element & "article" element with information from the API,
+/* Loop through all the items of the API product table.
+For each item create an HTML "a" element & "article" element with information from the API,
 and place the "article" element as child of "a" element and "a" as child of the HTML element with the ID of "items".*/
 function insertProduct(listOfProducts) {
     for (let i = 0; i < listOfProducts.length; i++) {

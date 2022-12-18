@@ -401,7 +401,7 @@ lastNameElement.addEventListener('change', function(){
 
 function validateCity() {
     // Have to add it cannot end on a dash
-    const cityformat = /^([a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*$/;
+    const cityformat = /^([a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*/;
     if(cityElement.value.match(cityformat)) {   
         // cityErrorMsgElement.innerText = "This is good!";
         cityErrorMsgElement.innerText = "";
@@ -420,10 +420,11 @@ cityElement.addEventListener('change', function(){
     }
 })
 
-// \d{1,5}\s\w.\s(\b\w*\b\s){1,2}\w*\.
-// Not super happy about this one... for example 234 Union Grove won't work...and it's a valid address
+// /^(\d{1,5}|\d\/\w\s\d{1,5}|\d+\-\d+)[a-zA-Z]?\s((\w+\W?\w+?|\w+\,|\&|\w+\.)\s){1,}\w+(?<!\W)$/
+// This one is same except it contains "Negative lookbehind" which has browser compatiblity issues
 function validateAddress() {
-    const addressformat = /\b(\d{2,5}\s+)(?![a|p]m\b)(NW|NE|SW|SE|north|south|west|east|n|e|s|w)?([\s|\,|.]+)?(([a-zA-Z|\s+]{1,30}){1,4})(court|ct|street|st|drive|dr|lane|ln|road|rd|blvd)/i;
+    const addressformat = /^(\d{1,5}|\d\/\w\s\d{1,5}|\d+\-\d+)[a-zA-Z]?\s((\w+\W?\w+?|\w+\,|\&|\w+\.)\s){1,}((\w+\W?\w+?)|(\w+\.))$/;
+                                    
     if(addressElement.value.match(addressformat)) {   
         // addressErrorMsgElement.innerText = "This is good!";
         addressErrorMsgElement.innerText = "";
@@ -452,8 +453,17 @@ console.log(allErrorMsgElements);
 // }
 console.log(formElement[0].querySelectorAll("input"));
 const allInputElement = formElement[0].querySelectorAll("input");
-const contactObjectKeys = ["Firstname","Lastname","Address","City","Email"];
+const contactObjectKeys = ["firstName","lastName","address","city","email"];
 const contactObject = {};
+
+const data = [];
+const options = {
+    method: 'POST',
+    headers: {
+    'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(data),
+    };
 
 orderButtonElement.addEventListener("click", function(){
     // console.log(validationEmail);
@@ -474,6 +484,12 @@ orderButtonElement.addEventListener("click", function(){
                 }
                 console.log(contactObject);
                 console.log(cartItemsLocalStorage)
+                data.push(contactObject,cartItemsLocalStorage);
+                console.log(data);
+                // Do I need to use promises here, it sends out data rather than waiting for incoming data
+                // fetch("http://localhost:3000/api/order", options);
+                localStorage.clear();
+                location.href = "./confirmation.html";
                 break
             }
         } else {
@@ -487,3 +503,4 @@ orderButtonElement.addEventListener("click", function(){
     }
      // if (validationEmail === 1) {
 })
+

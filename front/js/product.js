@@ -5,6 +5,10 @@ return data.json();
 })
 .then(listOfProducts => {
 insertProduct(listOfProducts);
+})
+.catch(error => {
+console.log("Error! Check if server is up and running");
+console.error(error);
 });
 
 

@@ -7,6 +7,10 @@ return data.json();
 })
 .then(listOfProducts => {
 insertProduct(listOfProducts);
+})
+.catch(error => {
+console.log("Error! Check if server is up and running");
+console.error(error);
 });
 
 
@@ -456,14 +460,7 @@ const allInputElement = formElement[0].querySelectorAll("input");
 const contactObjectKeys = ["firstName","lastName","address","city","email"];
 const contactObject = {};
 
-const data = [];
-const options = {
-    method: 'POST',
-    headers: {
-    'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(data),
-    };
+const data = {};
 
 orderButtonElement.addEventListener("click", function(){
     // console.log(validationEmail);
@@ -478,21 +475,38 @@ orderButtonElement.addEventListener("click", function(){
             if (successCount === 5) {
                 console.log("Success");
                 for (let i = 0; i < allInputElement.length - 1; i++) {
-                    console.log(contactObjectKeys[i]);
-                    console.log(allInputElement[i].value);
+                    // console.log(contactObjectKeys[i]);
+                    // console.log(allInputElement[i].value);
                     contactObject[contactObjectKeys[i]] = allInputElement[i].value;
                 }
                 console.log(contactObject);
-                console.log(cartItemsLocalStorage)
-                data.push(contactObject,cartItemsLocalStorage);
+                console.log(cartItemsLocalStorage);
+                data.contact = contactObject;
+                data.products = [];
+                for (let i = 0; i < cartItemsLocalStorage.length; i++) {
+                    const cartItemLocalStorage = cartItemsLocalStorage[i];
+                    data.products.push(cartItemLocalStorage[0]); 
+                }
                 console.log(data);
                 // Do I need to use promises here, it sends out data rather than waiting for incoming data
-                // fetch("http://localhost:3000/api/order", options);
+                const options = {
+                    method: 'POST',
+                    headers: {
+                    'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                    }
+                
+                fetch("http://localhost:3000/api/products/order", options)
+                    .then(res => res.json())
+                    .then(data => location.href = `./confirmation.html?orderid=${data.orderId}`);
                 localStorage.clear();
-                location.href = "./confirmation.html";
+                // localStorage.clear();
+                // location.href = "./confirmation.html";
                 break
             }
         } else {
+            //Is this still work? Maybe cahnge for loops in the functions before because I use "i" here...
             for (let j = 0; j < allErrorMsgElements.length; j++) {
                 // console.log(allErrorMsgElements[j]);
                 allErrorMsgElements[i].innerText = "This is required";

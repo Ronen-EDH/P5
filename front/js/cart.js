@@ -6,9 +6,10 @@ fetch("http://localhost:3000/api/products")
 return data.json();
 })
 .then(listOfProducts => {
-insertProduct(listOfProducts);
+insertProductsFromLocalStorage(listOfProducts);
 })
 .catch(error => {
+alert("Error! Check if server is up and running");    
 console.log("Error! Check if server is up and running");
 console.error(error);
 });
@@ -17,12 +18,12 @@ console.error(error);
 const itemQuantityEl = document.getElementsByClassName("itemQuantity");
 const totalPriceEl = document.getElementById("totalPrice");
 const totalQuantityEl = document.getElementById("totalQuantity");
+totalPriceEl.textContent = 0;
+totalQuantityEl.textContent = 0;
 let total = 0;
 let totalQuantity = 0;
 
-function insertProduct(listOfProducts) {
-    // let total = 0;
-    // let totalQuantity = 0;
+function insertProductsFromLocalStorage(listOfProducts) {
     for (let i = 0; i < listOfProducts.length; i++) {
         const product = listOfProducts[i];
         // console.log(product);
@@ -62,6 +63,7 @@ function insertProduct(listOfProducts) {
                 const cartItemsSection = document.getElementById("cart__items");
                 cartItemsSection.appendChild(articleELement);
                 
+                // Write a function for this | I checked I can do it, but returning 2 or more values seems to requre putting them in a list thus it makes my code more complicated, I don't think it's worth
                 total += product.price * cartItemLocalStorage[2];
                 totalQuantity += cartItemLocalStorage[2];
                 totalPriceEl.textContent = total;
@@ -76,15 +78,11 @@ function insertProduct(listOfProducts) {
 
 
 window.onload = function() {
-    // const itemQuantityEl = document.getElementsByClassName("itemQuantity");
-    const deleteItemEl = document.getElementsByClassName("deleteItem");
-    // const currentItem = 0;
-    // console.log(deleteItemEl);
-    // console.log(itemQuantityEl);
-    // console.log(itemQuantity[0]);
+    const deleteItemElement = document.getElementsByClassName("deleteItem");
     for (let i = 0; i < itemQuantityEl.length; i++) {
         const currentItem = itemQuantityEl[i];
         // console.log(currentItem);
+        // How can break down this eventlistener, google for example code
         currentItem.addEventListener('change', function(){
             console.log("Quantity has been changed on: ",currentItem.closest("article"));
             const currentItemEl = currentItem.closest("article");
@@ -95,6 +93,7 @@ window.onload = function() {
             for (let n = 0; n < cartItemsLocalStorage.length; n++) {
                 // console.log(cartItemsLocalStorage[n]);
                 const cartItemLocalStorage = cartItemsLocalStorage[n];
+                //
                 if (cartItemLocalStorage[0] === currentItemID && cartItemLocalStorage[1] === currentItemColor) {
                     // Is it ok to use this here? I mean it makes the rest of the thing wait. Maybe I can just use fetch without .then? 
                     fetch("http://localhost:3000/api/products")
@@ -111,7 +110,6 @@ window.onload = function() {
                             // console.log(product);
                             if (currentItemID === product._id) {
                                 // console.log("Current product price: ",product.price);
-                                // Why is cartItemLocalStorage[2] here is the "after value and on line 120 the one I want?"
                                 // console.log("Single item value before: ",cartItemLocalStorage[2]);
                                 let itemTotalValueBefore = (product.price * cartItemLocalStorage[2]);
                                 // console.log("itemTotalValueBefore: ",itemTotalValueBefore);
@@ -144,8 +142,8 @@ window.onload = function() {
         });   
     }
 
-    for (let i = 0; i < deleteItemEl.length; i++) {
-        const currentItemDel = deleteItemEl[i];
+    for (let i = 0; i < deleteItemElement.length; i++) {
+        const currentItemDel = deleteItemElement[i];
         // console.log(currentItemDel);
         currentItemDel.addEventListener("click", function(){
             console.log("Delete button clicked on: ",currentItemDel);
@@ -187,14 +185,6 @@ window.onload = function() {
                             }
                         }
                     }
-                    // console.log(cartItemLocalStorage);
-                    // const index = cartItemsLocalStorage.indexOf(cartItemLocalStorage);
-                    // if (index > -1) { 
-                    //     cartItemsLocalStorage.splice(index, 1);
-                    //     console.log(cartItemsLocalStorage);
-                    //     localStorage.setItem("cart-items", JSON.stringify(cartItemsLocalStorage));
-                    //     console.log("Local storage: ",localStorage);
-                    //     }
                 }
             }
         })
@@ -324,9 +314,10 @@ emailElement.addEventListener('change', function(){
 // validationFirstName = validateCheck(validationFirstName);
 // console.log("ValidateCheck result: ",validationFirstName);
 
-/* function validateName(nameEl,validationForName,errorMsgEl) {
-    const nameformat = /^[a-z ,.'-]+$/i;
+function validateName(nameEl,validationForName,errorMsgEl) {
+    const nameformat = /^[a-z,.'-]+$/i;
     if(nameEl.value.match(nameformat)) {
+        errorMsgEl.innerText = "";
         return validationForName + 1;
         // validationForName = validateCheck(validationForName);
         // console.log("validation value: ",validationName);
@@ -335,50 +326,51 @@ emailElement.addEventListener('change', function(){
     }
 }
 
-firstNameEl.addEventListener('change', function(){
-    if (firstNameEl.value === "" ) {
-        firstNameErrorMsgEl.innerText = "This is required";
+firstNameElement.addEventListener('change', function(){
+    if (firstNameElement.value === "" ) {
+        firstNameErrorMsgElement.innerText = "This is required";
     } else {
-        validateName(firstNameEl,validationFirstName,firstNameErrorMsgEl);
+        validateName(firstNameElement,validationFirstName,firstNameErrorMsgElement);
         // validationFirstName = validateCheck(validationFirstName);
         console.log("validation value 2nd round: ",validationFirstName);     
     }
 
 })
 
-lastNameEl.addEventListener('change', function(){
-    if (lastNameEl.value === "" ) {
-        lastNameErrorMsgEl.innerText = "This is required";
+lastNameElement.addEventListener('change', function(){
+    if (lastNameElement.value === "" ) {
+        lastNameErrorMsgElement.innerText = "This is required";
     } else {
-        validateName(lastNameEl,validationLastName,lastNameErrorMsgEl);
-        validationLastName = validateCheck(validationLastName);
+        validateName(lastNameElement,validationLastName,lastNameErrorMsgElement);
+        // validationLastName = validateCheck(validationLastName);
     }
 })
- */
+
 
 // Maybe exclude spaces? So just one firstname and lastname?
-function validateFirstName() {
-    const nameformat = /^[a-z ,.'-]+$/i;
+/* function validateFirstName() {
+    const nameformat = /^[a-z,.'-]+$/i;
     if(firstNameElement.value.match(nameformat)) {
         firstNameErrorMsgElement.innerText = "";
         validationFirstName = 1;
         // validationForName = validateCheck(validationForName);
         // console.log("validation value: ",validationName);
     } else {
-        firstNameErrorMsgElement.innerText = "Name should contain only letters!";
+        firstNameErrorMsgElement.innerText = "You have entered an invalid name format!";
         validationFirstName = 0;
     }
 }
 
 function validateLastName() {
-    const nameformat = /^[a-z ,.'-]+$/i;
+    const nameformat = /^[a-z,.'-]+$/i;
     if(lastNameElement.value.match(nameformat)) {
         lastNameErrorMsgElement.innerText = ""
         validationLastName = 1;
         // validationForName = validateCheck(validationForName);
         // console.log("validation value: ",validationName);
     } else {
-        lastNameErrorMsgElement.innerText = "Name should contain only letters!";
+        // 'Last name should contain only letters or "," "." "-" "\'" characters!'
+        lastNameErrorMsgElement.innerText = "You have entered an invalid name format!";
         validationLastName = 0;
     }
 }
@@ -400,12 +392,12 @@ lastNameElement.addEventListener('change', function(){
     } else {
         validateLastName();
     }
-})
+}) */
 
 
 function validateCity() {
     // Have to add it cannot end on a dash
-    const cityformat = /^([a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*/;
+    const cityformat = /^([a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*$/;
     if(cityElement.value.match(cityformat)) {   
         // cityErrorMsgElement.innerText = "This is good!";
         cityErrorMsgElement.innerText = "";
@@ -426,6 +418,7 @@ cityElement.addEventListener('change', function(){
 
 // /^(\d{1,5}|\d\/\w\s\d{1,5}|\d+\-\d+)[a-zA-Z]?\s((\w+\W?\w+?|\w+\,|\&|\w+\.)\s){1,}\w+(?<!\W)$/
 // This one is same except it contains "Negative lookbehind" which has browser compatiblity issues
+// 1/R , 82/4 type addresses not working...
 function validateAddress() {
     const addressformat = /^(\d{1,5}|\d\/\w\s\d{1,5}|\d+\-\d+)[a-zA-Z]?\s((\w+\W?\w+?|\w+\,|\&|\w+\.)\s){1,}((\w+\W?\w+?)|(\w+\.))$/;
                                     
@@ -463,13 +456,17 @@ const contactObject = {};
 const data = {};
 
 orderButtonElement.addEventListener("click", function(){
-    // console.log(validationEmail);
+    console.log(totalQuantity);
+    if (totalQuantity === 0) {
+        alert("There are no items in the cart, please go to the homepage to select your product first");
+        return;
+    }
     let successCount = 0;
     const validationAll = [validationFirstName,validationLastName,validationAddress,validationCity,validationEmail]
     for (let i = 0; i < validationAll.length; i++) {
         // console.log(validationAll[i]);
         const currentItemForValidation = validationAll[i];
-        // console.log(validationAll);
+        console.log(validationAll);
         if (currentItemForValidation === 1) {
             successCount += 1;
             if (successCount === 5) {
@@ -488,7 +485,6 @@ orderButtonElement.addEventListener("click", function(){
                     data.products.push(cartItemLocalStorage[0]); 
                 }
                 console.log(data);
-                // Do I need to use promises here, it sends out data rather than waiting for incoming data
                 const options = {
                     method: 'POST',
                     headers: {
@@ -497,10 +493,9 @@ orderButtonElement.addEventListener("click", function(){
                     body: JSON.stringify(data),
                     }
                 
-                fetch("http://localhost:3000/api/products/order", options)
-                    .then(res => res.json())
-                    .then(data => location.href = `./confirmation.html?orderid=${data.orderId}`);
-                localStorage.clear();
+                // fetch("http://localhost:3000/api/products/order", options)
+                //     .then(res => res.json())
+                //     .then(data => location.href = `./confirmation.html?orderid=${data.orderId}`);
                 // localStorage.clear();
                 // location.href = "./confirmation.html";
                 break
@@ -515,6 +510,5 @@ orderButtonElement.addEventListener("click", function(){
             // console.log("Please fill out the required fields");
         }   
     }
-     // if (validationEmail === 1) {
 })
 

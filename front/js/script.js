@@ -4,9 +4,10 @@ fetch("http://localhost:3000/api/products")
 return data.json();
 })
 .then(listOfProducts => {
-insertProduct(listOfProducts);
+insertProducts(listOfProducts);
 })
 .catch(error => {
+alert("Error! Check if server is up and running");  
 console.log("Error! Check if server is up and running");
 console.error(error);
 });
@@ -23,7 +24,7 @@ const itemsEL = document.getElementById("items");
 /* Loop through all the items of the API product table.
 For each item create an HTML "a" element & "article" element with information from the API,
 and place the "article" element as child of "a" element and "a" as child of the HTML element with the ID of "items".*/
-function insertProduct(listOfProducts) {
+function insertProducts(listOfProducts) {
     for (let i = 0; i < listOfProducts.length; i++) {
         const product = listOfProducts[i];
         const articleELement = document.createElement("article");
@@ -37,22 +38,5 @@ function insertProduct(listOfProducts) {
         itemsEL.appendChild(anchorElement)
         anchorElement.appendChild(articleELement);
     }
-
-    // for (let i of products) {
-    //     const product = products[i];
-    //     // console.log(product);
-    //     console.log(products[i]);
-    //     const articleELement = document.createElement("article");
-    //     const anchorElement = document.createElement("a");
-
-    //     anchorElement.setAttribute("href",`./product.html?id=${product._id}`);
-    //     articleELement.innerHTML = `
-    //         <img src="${product.imageUrl}" alt="${product.altTxt}, ${product.name}">
-    //         <h3 class="productName">${product.name}</h3>
-    //         <p class="productDescription">${product.description}</p
-    //         `
-    //     itemsEL.appendChild(anchorElement);
-    //     anchorElement.appendChild(articleELement);
-    // }
 }
 

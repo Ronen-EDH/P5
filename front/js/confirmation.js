@@ -6,8 +6,7 @@ const queryString = window.location.search;
 const urlParams = new URLSearchParams(queryString);
 const orderid = urlParams.get("orderid");
 
-console.log(orderid);
+// console.log(orderid);
 
 const orderIdElement = document.getElementById("orderId");
-
 orderIdElement.textContent = orderid;

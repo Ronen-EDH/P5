@@ -1,4 +1,4 @@
-const cartItemsLocalStorage = JSON.parse(localStorage.getItem(("cart-items")));
+const cartItemsLocalStorage = JSON.parse(localStorage.getItem(("cart-items")))??[];
 console.log(cartItemsLocalStorage);
 
 fetch("http://localhost:3000/api/products")
@@ -76,14 +76,14 @@ function insertProductsFromLocalStorage(listOfProducts) {
 }
 // const itemQuantity = document.getElementsByClassName("itemQuantity");
 
-
+// Should I name this one too?
 window.onload = function() {
-    const deleteItemElement = document.getElementsByClassName("deleteItem");
     for (let i = 0; i < itemQuantityEl.length; i++) {
         const currentItem = itemQuantityEl[i];
         // console.log(currentItem);
         // How can break down this eventlistener, google for example code
-        currentItem.addEventListener('change', function(){
+        currentItem.addEventListener('change', foundCurrentItemInLocalStorage);
+        function foundCurrentItemInLocalStorage() {
             console.log("Quantity has been changed on: ",currentItem.closest("article"));
             const currentItemEl = currentItem.closest("article");
             // console.log(currentItemEl.getAttribute("data-id"))
@@ -101,10 +101,10 @@ window.onload = function() {
                     return data.json();
                     })
                     .then(listOfProducts => {
-                    insertProductForQuantityChange(listOfProducts);
+                    getPriceFromApiForQuantityChange(listOfProducts);
                     });
                     // insertProductForQuantityChange(listOfProducts);
-                    function insertProductForQuantityChange(listOfProducts) {
+                    function getPriceFromApiForQuantityChange(listOfProducts) {
                         for (let i = 0; i < listOfProducts.length; i++) {
                             const product = listOfProducts[i];
                             // console.log(product);
@@ -139,14 +139,16 @@ window.onload = function() {
                     }
                 }
             }
-        });   
+        }
     }
 
+    const deleteItemElement = document.getElementsByClassName("deleteItem");
     for (let i = 0; i < deleteItemElement.length; i++) {
         const currentItemDel = deleteItemElement[i];
         // console.log(currentItemDel);
-        currentItemDel.addEventListener("click", function(){
-            console.log("Delete button clicked on: ",currentItemDel);
+        currentItemDel.addEventListener("click", deleteCurrentItemElement)
+        function deleteCurrentItemElement() {
+            // console.log("Delete button clicked on: ",currentItemDel);
             const currentItemDelEl = currentItemDel.closest("article");
             console.log(currentItemDelEl);
             currentItemDelEl.remove();
@@ -160,12 +162,14 @@ window.onload = function() {
                     return data.json();
                     })
                     .then(listOfProducts => {
-                    insertProductForDelete(listOfProducts);
+                    getPriceFromApiToUpdateCartAfterItemDelete(listOfProducts);
+                    // getPriceFromApiToUpdateLocalStorageAndTotalCounter(listOfProducts);
                     });
-                    function insertProductForDelete(listOfProducts) {
+                    function getPriceFromApiToUpdateCartAfterItemDelete(listOfProducts) {
                         for (let i = 0; i < listOfProducts.length; i++) {
                             const product = listOfProducts[i];
                             // console.log(product);
+                            // Right a function for this part as it's a duplicate
                             if (currentItemID === product._id) {
                                 // console.log(product._id);
                                 // console.log(cartItemLocalStorage);
@@ -181,15 +185,75 @@ window.onload = function() {
                                     console.log(cartItemsLocalStorage);
                                     localStorage.setItem("cart-items", JSON.stringify(cartItemsLocalStorage));
                                     console.log("Local storage: ",localStorage);
-                                    }
+                                }
                             }
                         }
                     }
                 }
             }
-        })
+        }
+ 
     }
 }
+
+/* function foundCurrentItemInLocalStorage() {
+    console.log("Quantity has been changed on: ",currentItem.closest("article"));
+    const currentItemEl = currentItem.closest("article");
+    // console.log(currentItemEl.getAttribute("data-id"))
+    // console.log(currentItemEl.getAttribute("data-color"))   
+    const currentItemID = currentItemEl.getAttribute("data-id");
+    const currentItemColor = currentItemEl.getAttribute("data-color");
+    for (let n = 0; n < cartItemsLocalStorage.length; n++) {
+        // console.log(cartItemsLocalStorage[n]);
+        const cartItemLocalStorage = cartItemsLocalStorage[n];
+        //
+        if (cartItemLocalStorage[0] === currentItemID && cartItemLocalStorage[1] === currentItemColor) {
+            // Is it ok to use this here? I mean it makes the rest of the thing wait. Maybe I can just use fetch without .then? 
+            fetch("http://localhost:3000/api/products")
+            .then(data => {
+            return data.json();
+            })
+            .then(listOfProducts => {
+            getPriceFromApiForQuantityChange(listOfProducts);
+            });
+            // insertProductForQuantityChange(listOfProducts);
+            function getPriceFromApiForQuantityChange(listOfProducts) {
+                for (let i = 0; i < listOfProducts.length; i++) {
+                    const product = listOfProducts[i];
+                    // console.log(product);
+                    if (currentItemID === product._id) {
+                        // console.log("Current product price: ",product.price);
+                        // console.log("Single item value before: ",cartItemLocalStorage[2]);
+                        let itemTotalValueBefore = (product.price * cartItemLocalStorage[2]);
+                        // console.log("itemTotalValueBefore: ",itemTotalValueBefore);
+                        // total = total + (product.price * currentItem.value);
+                        // console.log(totalPriceEl.textContent);
+                        // let newTotal = total - itemTotalValueBefore;
+                        total -= itemTotalValueBefore;
+                        // console.log("Total: ", total);
+                        // console.log("New total:",newTotal);
+                        totalQuantity -= cartItemLocalStorage[2];
+                        // console.log(totalQuantity);
+                        // console.log("Before the pop&push: ",cartItemLocalStorage);
+                        cartItemLocalStorage.pop();
+                        cartItemLocalStorage.push(+currentItem.value);
+                        // console.log("Value after: ",currentItem.value);
+                        // total = newTotal + (product.price * currentItem.value);
+                        total += product.price * currentItem.value;
+                        // console.log("Total: ", total);
+                        totalQuantity += +currentItem.value;
+                        totalPriceEl.textContent = total;
+                        totalQuantityEl.textContent = totalQuantity;
+                        // console.log("After the pop&push: ",cartItemLocalStorage);
+                        console.log(cartItemsLocalStorage[n]);
+                        localStorage.setItem("cart-items", JSON.stringify(cartItemsLocalStorage));
+                    }
+                }
+            }
+        }
+    }
+} */
+
     // localStorage.setItem("cart-items", JSON.stringify(cartItemsLocalStorage));
     // console.log("Local storage: ",localStorage);
     
@@ -279,7 +343,7 @@ let validationEmail = 0;
 // const validationAll = [validationFirstName,validationLastName,validationAddress,validationCity,validationEmail]
 
 
-function validateEmail() {
+function validateEmailInput() {
     // const mailformat = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     const mailformat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if(emailElement.value.match(mailformat)) {
@@ -301,8 +365,9 @@ function validateEmail() {
 emailElement.addEventListener('change', function(){
     if (emailElement.value === "" ) {
         emailErrorMsgElement.innerText = "This is required";
+        validationEmail = 0;
     } else {
-        validateEmail();
+        validateEmailInput();
         // console.log(validationEmail);
     }
 })
@@ -314,7 +379,7 @@ emailElement.addEventListener('change', function(){
 // validationFirstName = validateCheck(validationFirstName);
 // console.log("ValidateCheck result: ",validationFirstName);
 
-function validateName(nameEl,validationForName,errorMsgEl) {
+function validateNameInput(nameEl,validationForName,errorMsgEl) {
     const nameformat = /^[a-z,.'-]+$/i;
     if(nameEl.value.match(nameformat)) {
         errorMsgEl.innerText = "";
@@ -330,7 +395,7 @@ firstNameElement.addEventListener('change', function(){
     if (firstNameElement.value === "" ) {
         firstNameErrorMsgElement.innerText = "This is required";
     } else {
-        validateName(firstNameElement,validationFirstName,firstNameErrorMsgElement);
+        validateNameInput(firstNameElement,validationFirstName,firstNameErrorMsgElement);
         // validationFirstName = validateCheck(validationFirstName);
         console.log("validation value 2nd round: ",validationFirstName);     
     }
@@ -341,14 +406,14 @@ lastNameElement.addEventListener('change', function(){
     if (lastNameElement.value === "" ) {
         lastNameErrorMsgElement.innerText = "This is required";
     } else {
-        validateName(lastNameElement,validationLastName,lastNameErrorMsgElement);
+        validateNameInput(lastNameElement,validationLastName,lastNameErrorMsgElement);
         // validationLastName = validateCheck(validationLastName);
     }
 })
 
 
 // Maybe exclude spaces? So just one firstname and lastname?
-/* function validateFirstName() {
+function validateFirstName() {
     const nameformat = /^[a-z,.'-]+$/i;
     if(firstNameElement.value.match(nameformat)) {
         firstNameErrorMsgElement.innerText = "";
@@ -378,6 +443,7 @@ function validateLastName() {
 firstNameElement.addEventListener('change', function(){
     if (firstNameElement.value === "" ) {
         firstNameErrorMsgElement.innerText = "This is required";
+        validationFirstName = 0;
     } else {
         validateFirstName();
         // validationFirstName = validateCheck(validationFirstName);
@@ -389,13 +455,15 @@ firstNameElement.addEventListener('change', function(){
 lastNameElement.addEventListener('change', function(){
     if (lastNameElement.value === "" ) {
         lastNameErrorMsgElement.innerText = "This is required";
+        validationLastName = 0;
     } else {
         validateLastName();
+        console.log("validation value for Last name: ",validationLastName);
     }
-}) */
+})
 
 
-function validateCity() {
+function validateCityInput() {
     // Have to add it cannot end on a dash
     const cityformat = /^([a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*$/;
     if(cityElement.value.match(cityformat)) {   
@@ -411,22 +479,23 @@ function validateCity() {
 cityElement.addEventListener('change', function(){
     if (cityElement.value === "" ) {
         cityErrorMsgElement.innerText = "This is required";
+        validationCity = 0;
     } else {
-        validateCity();
+        validateCityInput();
     }
 })
 
 // /^(\d{1,5}|\d\/\w\s\d{1,5}|\d+\-\d+)[a-zA-Z]?\s((\w+\W?\w+?|\w+\,|\&|\w+\.)\s){1,}\w+(?<!\W)$/
 // This one is same except it contains "Negative lookbehind" which has browser compatiblity issues
 // 1/R , 82/4 type addresses not working...
-function validateAddress() {
-    const addressformat = /^(\d{1,5}|\d\/\w\s\d{1,5}|\d+\-\d+)[a-zA-Z]?\s((\w+\W?\w+?|\w+\,|\&|\w+\.)\s){1,}((\w+\W?\w+?)|(\w+\.))$/;
+function validateAddressInput() {
+    const addressformat = /^([1-9]|\d{1,5}\/?\w{1,3}?|\d+\-\d+)[a-zA-Z]?\s(([a-zA-Z]+\-?[a-zA-Z]+|[a-zA-Z]+\'?[a-zA-Z]+?|[a-zA-Z]+\,|\&|[a-zA-Z]+\.)\s){1,}(([a-zA-Z]+\-?[a-zA-Z]+?)|([a-zA-Z]+\.))$/;
                                     
     if(addressElement.value.match(addressformat)) {   
         // addressErrorMsgElement.innerText = "This is good!";
         addressErrorMsgElement.innerText = "";
         validationAddress = 1;
-    } else {
+    } else {    
         addressErrorMsgElement.innerText = "You have entered an invalid address!";
         validationAddress = 0;
     }
@@ -435,8 +504,9 @@ function validateAddress() {
 addressElement.addEventListener('change', function(){
     if (addressElement.value === "" ) {
         addressErrorMsgElement.innerText = "This is required";
+        validationAddress = 0;
     } else {
-        validateAddress();
+        validateAddressInput();
     }
 })
 
@@ -455,8 +525,9 @@ const contactObject = {};
 
 const data = {};
 
-orderButtonElement.addEventListener("click", function(){
-    console.log(totalQuantity);
+orderButtonElement.addEventListener("click", validateAllFormInput);
+function validateAllFormInput() {
+    // console.log(totalQuantity);
     if (totalQuantity === 0) {
         alert("There are no items in the cart, please go to the homepage to select your product first");
         return;
@@ -469,39 +540,44 @@ orderButtonElement.addEventListener("click", function(){
         console.log(validationAll);
         if (currentItemForValidation === 1) {
             successCount += 1;
-            if (successCount === 5) {
+            if  (successCount === 5){
+                console.log(successCount);
                 console.log("Success");
-                for (let i = 0; i < allInputElement.length - 1; i++) {
-                    // console.log(contactObjectKeys[i]);
-                    // console.log(allInputElement[i].value);
-                    contactObject[contactObjectKeys[i]] = allInputElement[i].value;
-                }
-                console.log(contactObject);
-                console.log(cartItemsLocalStorage);
-                data.contact = contactObject;
-                data.products = [];
-                for (let i = 0; i < cartItemsLocalStorage.length; i++) {
-                    const cartItemLocalStorage = cartItemsLocalStorage[i];
-                    data.products.push(cartItemLocalStorage[0]); 
-                }
-                console.log(data);
-                const options = {
-                    method: 'POST',
-                    headers: {
-                    'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data),
+                sendUserContactDetails();
+                function sendUserContactDetails() {
+                    for (let i = 0; i < allInputElement.length - 1; i++) {
+                        // console.log(contactObjectKeys[i]);
+                        // console.log(allInputElement[i].value);
+                        contactObject[contactObjectKeys[i]] = allInputElement[i].value;
                     }
-                
-                // fetch("http://localhost:3000/api/products/order", options)
-                //     .then(res => res.json())
-                //     .then(data => location.href = `./confirmation.html?orderid=${data.orderId}`);
-                // localStorage.clear();
-                // location.href = "./confirmation.html";
+                    // console.log(contactObject);
+                    // console.log(cartItemsLocalStorage);
+                    data.contact = contactObject;
+                    data.products = [];
+                    for (let i = 0; i < cartItemsLocalStorage.length; i++) {
+                        const cartItemLocalStorage = cartItemsLocalStorage[i];
+                        console.log(cartItemLocalStorage[0]);
+                        data.products.push(cartItemLocalStorage[0]); 
+                    }
+                    console.log(data);
+                    const options = {
+                        method: 'POST',
+                        headers: {
+                        'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data),
+                        }
+                    
+                    fetch("http://localhost:3000/api/products/order", options)
+                        .then(res => res.json())
+                        // .then(data => location.href = `./confirmation.html?orderid=${data.orderId}`);
+                        // localStorage.clear();
+                    // location.href = "./confirmation.html";
+                }
+                // Do I need this break?
                 break
             }
         } else {
-            //Is this still work? Maybe cahnge for loops in the functions before because I use "i" here...
             for (let j = 0; j < allErrorMsgElements.length; j++) {
                 // console.log(allErrorMsgElements[j]);
                 allErrorMsgElements[i].innerText = "This is required";
@@ -510,5 +586,4 @@ orderButtonElement.addEventListener("click", function(){
             // console.log("Please fill out the required fields");
         }   
     }
-})
-
+}

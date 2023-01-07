@@ -23,7 +23,6 @@
 
 // Get data from API, convert it with json()method for js to read, when that's done run "insertProduct" function with the converted data
 // This function is used to fetch the products from the server as JSON
-
 function fetchProducts() {
     return fetch("http://localhost:3000/api/products")
       .then((data) => data.json())

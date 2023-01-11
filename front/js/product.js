@@ -22,7 +22,7 @@ const buildProductElement = async (productId,productColorSelectorElement) => {
  /** When you click "Add to cart", create an array of the product id,selected color value and quantity.
  *  In case the id - selected color pair already exists in the array, update only the quantity.
  *  If no color were selected, or try to add "0", or over a "100" articels to the cart an error message pops up on the screen */
-function addProductToCart(productId, listOfCartItems,productColorSelectorElement) {
+function addProductToCart(productId, cartItems,productColorSelectorElement) {
     const addToCartButton = document.getElementById("addToCart");
     addToCartButton.addEventListener("click", function() {
         let itemQuantity = +(document.getElementById("quantity").value);
@@ -30,24 +30,24 @@ function addProductToCart(productId, listOfCartItems,productColorSelectorElement
         if (selectedColorValue === "") return alert("Product color has not been selected, please pick a color");
         if (itemQuantity === 0) return alert('Cannot add 0 articles to the cart, please select a valid value');
         if (itemQuantity > 100) return alert('Cannot add more than a 100 articles to the cart, please select a valid value');
-        if (listOfCartItems.length === 0) {
-            listOfCartItems.push([productId, selectedColorValue, itemQuantity]);
+        if (cartItems.length === 0) {
+            cartItems.push([productId, selectedColorValue, itemQuantity]);
         } else {
-            for (let i = 0; i < listOfCartItems.length; i++) {
-                const cartItem = listOfCartItems[i];
+            for (let i = 0; i < cartItems.length; i++) {
+                const cartItem = cartItems[i];
                 if (productId === cartItem[0] && cartItem.includes(selectedColorValue)) {
                     cartItem[2] += itemQuantity;
                     itemQuantity = cartItem[2];
                     cartItem.pop();
                     cartItem.push(itemQuantity);
                     break;
-                } else if(i === listOfCartItems.length - 1) {
-                    listOfCartItems.push([productId, selectedColorValue, itemQuantity]);
+                } else if(i === cartItems.length - 1) {
+                    cartItems.push([productId, selectedColorValue, itemQuantity]);
                     break;
                 };
             };
         };
-        setItemsToLocalStorage(listOfCartItems);
+        setItemsToLocalStorage(cartItems);
     });
 };
 
@@ -58,9 +58,9 @@ function addProductToCart(productId, listOfCartItems,productColorSelectorElement
     const urlParams = new URLSearchParams(queryString);
     const productId = urlParams.get("id");
     // const productId = new URLSearchParams(window.location.search).get("id");
-    const listOfCartItems = getCartItemsFromLocalStorage();
+    const cartItems = getCartItemsFromLocalStorage();
     const productColorSelectorElement = document.getElementById("colors");
     buildProductElement(productId, productColorSelectorElement);
-    addProductToCart(productId, listOfCartItems, productColorSelectorElement);
+    addProductToCart(productId, cartItems, productColorSelectorElement);
   };
   main();

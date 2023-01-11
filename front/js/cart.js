@@ -1,6 +1,6 @@
 /** Loop through the local storage to get all the products that have been selected by the user, and display them in the cart
  *  calculate the sum of the quantity and price of the articles in the "Total" section. */
-function buildCart(listOfProducts, listOfCartItems) {
+function buildCart(products, cartItems) {
     const totalPriceEl = document.getElementById("totalPrice");
     const totalQuantityEl = document.getElementById("totalQuantity");
     totalPriceEl.textContent = 0;
@@ -8,9 +8,9 @@ function buildCart(listOfProducts, listOfCartItems) {
     let totalPrice = 0;
     let totalQuantity = 0;
 
-    for (let i = 0; i < listOfCartItems.length; i++ ) {
-        let cartItem = listOfCartItems[i];
-        let product = listOfProducts.find((x) => x._id === cartItem[0]);
+    for (let i = 0; i < cartItems.length; i++ ) {
+        let cartItem = cartItems[i];
+        let product = products.find((x) => x._id === cartItem[0]);
         const articleElement = document.createElement("article");
         articleElement.setAttribute("class","cart__item");
         articleElement.setAttribute("data-id",cartItem[0]);
@@ -53,17 +53,17 @@ function buildCart(listOfProducts, listOfCartItems) {
                 cartItem.push(quantity);
             } else { 
                 articleElement.remove();
-                const index = listOfCartItems.indexOf(cartItem);
+                const index = cartItems.indexOf(cartItem);
                 if (index > -1) { 
-                    listOfCartItems.splice(index, 1);
+                    cartItems.splice(index, 1);
                 };
             };
-            // setItemsToLocalStorage(listOfCartItems);
+            // setItemsToLocalStorage(cartItems);
             totalPrice = 0;
             totalQuantity = 0;
-            for (let i = 0; i < listOfCartItems.length; i++ ) {
-                let cartItem = listOfCartItems[i];
-                product = listOfProducts.find((x) => x._id === cartItem[0]);
+            for (let i = 0; i < cartItems.length; i++ ) {
+                let cartItem = cartItems[i];
+                product = products.find((x) => x._id === cartItem[0]);
                 countTotalPriceAndArticles(cartItem[2]);
             };
             totalPriceEl.textContent = totalPrice;
@@ -76,14 +76,14 @@ function buildCart(listOfProducts, listOfCartItems) {
             let itemQuantity = itemQuantityElement.value;
             itemQuantity = +itemQuantity;
             updateCart(itemQuantity);
-            setItemsToLocalStorage(listOfCartItems);
+            setItemsToLocalStorage(cartItems);
         });
         
         /** This eventlistener updates the cart and local storage when the user clicks on the delete button. */
         const deleteItemElement = articleElement.getElementsByClassName("deleteItem")[0];
         deleteItemElement.addEventListener("click", () => {
             updateCart(0);
-            setItemsToLocalStorage(listOfCartItems);    
+            setItemsToLocalStorage(cartItems);    
         });
         
         countTotalPriceAndArticles(cartItem[2]);
@@ -98,7 +98,7 @@ function buildCart(listOfProducts, listOfCartItems) {
  *  checking all user input separately from user input, as well as all together when "order" is clicked, 
  *  sending the contact and product details, then receiving the order id which will be displayed on the contact page, 
  *  and finally resetting the cart. */
-function placeAnOrder(listOfCartItems) {
+function placeAnOrder(cartItems) {
     const inputs = [
         {
           name: "firstName",
@@ -176,7 +176,7 @@ function placeAnOrder(listOfCartItems) {
     /** This function sends the contact and product details to the API and gets a response.
      *  That response is an order id which takes the user to the confirmation page and displays the order id.
      *  Also clears the local storage. */
-    function sendUserContactDetails(listOfCartItems) {
+    function sendUserContactDetails(cartItems) {
         const contact = {
             firstName: document.getElementById("firstName").value,
             lastName: document.getElementById("lastName").value,
@@ -187,8 +187,8 @@ function placeAnOrder(listOfCartItems) {
         const order = {};
         order.contact = contact;
         order.products = [];
-        for (let i = 0; i < listOfCartItems.length; i++) {
-            const cartItem = listOfCartItems[i];
+        for (let i = 0; i < cartItems.length; i++) {
+            const cartItem = cartItems[i];
             order.products.push(cartItem[0]); 
         };
         console.log(order);
@@ -206,7 +206,7 @@ function placeAnOrder(listOfCartItems) {
             localStorage.clear()
             .catch((err) => {
                 console.log("Error: ", err);
-                alert("Error! Check if server is up and running");
+                alert("503 - Service Unavailable");
             });
     };
 
@@ -219,16 +219,16 @@ function placeAnOrder(listOfCartItems) {
             return;
         };
         if (validationCheck())
-        sendUserContactDetails(listOfCartItems);
+        sendUserContactDetails(cartItems);
     });
 };
 
 /** Main is an asynchronous function that calls the "buildCart" function to display the products selected by the user,
  *  and another that paces the order for purchase. */
 const main = async () => {
-    const listOfProducts = await fetchProducts();
-    const listOfCartItems = getCartItemsFromLocalStorage();
-    buildCart(listOfProducts, listOfCartItems);
-    placeAnOrder(listOfCartItems);
+    const products = await fetchProducts();
+    const cartItems = getCartItemsFromLocalStorage();
+    buildCart(products, cartItems);
+    placeAnOrder(cartItems);
   };
   main();

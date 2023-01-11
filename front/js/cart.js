@@ -1,3 +1,5 @@
+/** Loop through the local storage to get all the products that have been selected by the user, and display them in the cart
+ *  calculate the sum of the quantity and price of the articles in the "Total" section. */
 function buildCart(listOfProducts, listOfCartItems) {
     const totalPriceEl = document.getElementById("totalPrice");
     const totalQuantityEl = document.getElementById("totalQuantity");
@@ -5,12 +7,10 @@ function buildCart(listOfProducts, listOfCartItems) {
     totalQuantityEl.textContent = 0;
     let totalPrice = 0;
     let totalQuantity = 0;
-    // console.log(cartItemsLocalStorage);
 
     for (let i = 0; i < listOfCartItems.length; i++ ) {
         let cartItem = listOfCartItems[i];
-        const product = listOfProducts.find((x) => x._id === cartItem[0]);
-        // console.log("Item in shopping cart: ",product )
+        let product = listOfProducts.find((x) => x._id === cartItem[0]);
         const articleElement = document.createElement("article");
         articleElement.setAttribute("class","cart__item");
         articleElement.setAttribute("data-id",cartItem[0]);
@@ -36,197 +36,195 @@ function buildCart(listOfProducts, listOfCartItems) {
                     </div>
                 </div>
             </div>
-            `
+            `;
         const cartItemsSection = document.getElementById("cart__items");
         cartItemsSection.appendChild(articleElement);
 
+        function countTotalPriceAndArticles(quantity) {
+            totalPrice += product.price * quantity;
+            totalQuantity += quantity;
+        };
+
+        /** This function replaces the old quantity with the new or removes the article entirely for the "quantity change" and "delete" eventlisteners,
+         *  and updates the "Total" section. */
+        function updateCart(quantity) {
+            if (quantity > 0) {
+                cartItem.pop();
+                cartItem.push(quantity);
+            } else { 
+                articleElement.remove();
+                const index = listOfCartItems.indexOf(cartItem);
+                if (index > -1) { 
+                    listOfCartItems.splice(index, 1);
+                };
+            };
+            // setItemsToLocalStorage(listOfCartItems);
+            totalPrice = 0;
+            totalQuantity = 0;
+            for (let i = 0; i < listOfCartItems.length; i++ ) {
+                let cartItem = listOfCartItems[i];
+                product = listOfProducts.find((x) => x._id === cartItem[0]);
+                countTotalPriceAndArticles(cartItem[2]);
+            };
+            totalPriceEl.textContent = totalPrice;
+            totalQuantityEl.textContent = totalQuantity;
+        };
+
+        /** This eventlistener updates the cart and local storage when changes occur with regards to the quantity. */
         const itemQuantityElement = articleElement.getElementsByClassName("itemQuantity")[0];
         itemQuantityElement.addEventListener("change", () => {
-            console.log("Quantity has been changed on: ", articleElement);
-            console.log("itemQuantityElement:",itemQuantityElement);
-            const itemQuantity = itemQuantityElement.value;
-            // console.log("Quantity:",itemQuantity);
-            // Why the before have the same value as the after, even though the change hasn't happend chronologically I don't understand...
-            // console.log("cartItemsLocalStorage before change:",cartItemsLocalStorage);
-            // console.log(cartItemLocalStorage[0]);
-            // console.log(product.price);
-            // console.log(cartItemLocalStorage[2]);
-            
-            updateCartItemInLocalStorage();
-            // let itemTotalValueBefore = (product.price * cartItemLocalStorage[2]);
-            // total -= itemTotalValueBefore;
-            // totalQuantity -= cartItemLocalStorage[2];
-            cartItem.pop();
-            cartItem.push(+itemQuantity);
-            totalPrice += product.price * itemQuantity;
-            // totalPriceEl.textContent = total;
-            totalQuantity += +itemQuantity;
-            updateCartArticleAndPriceCounter();
-            // totalQuantityEl.textContent = totalQuantity;
-            console.log("cartItemsLocalStorage after change:",listOfCartItems);
+            let itemQuantity = itemQuantityElement.value;
+            itemQuantity = +itemQuantity;
+            updateCart(itemQuantity);
             setItemsToLocalStorage(listOfCartItems);
         });
         
+        /** This eventlistener updates the cart and local storage when the user clicks on the delete button. */
         const deleteItemElement = articleElement.getElementsByClassName("deleteItem")[0];
-        // console.log(deleteItemElement);
         deleteItemElement.addEventListener("click", () => {
-            console.log("Quantity has been changed on: ", articleElement);
-            console.log("deleteItemElement:",deleteItemElement);
-            // const itemToDelete = deleteItemElement.closest("article");
-            // console.log(itemToDelete);
-            articleElement.remove();
-            updateCartItemInLocalStorage();
-            updateCartArticleAndPriceCounter();
-            // let itemTotalValueBefore = (product.price * cartItemLocalStorage[2]);
-            // total -= itemTotalValueBefore;
-            // totalPriceEl.textContent = total;
-            // totalQuantity -= cartItemLocalStorage[2];
-            // totalQuantityEl.textContent = totalQuantity;
-            const index = listOfCartItems.indexOf(cartItem);
-            if (index > -1) { 
-                listOfCartItems.splice(index, 1);
-                console.log(listOfCartItems);
-                setItemsToLocalStorage(listOfCartItems);
-                console.log("Local storage: ",localStorage);
-            }
+            updateCart(0);
+            setItemsToLocalStorage(listOfCartItems);    
         });
         
-        totalPrice += product.price * cartItem[2];
-        totalQuantity += +cartItem[2];
-        totalPriceEl.textContent = totalPrice;
-        totalQuantityEl.textContent = totalQuantity;
+        countTotalPriceAndArticles(cartItem[2]);
+    };
 
-        function updateCartItemInLocalStorage() {
-            let itemsTotalValueBefore = (product.price * cartItem[2]);
-            totalPrice -= itemsTotalValueBefore;
-            totalQuantity -= cartItem[2];
-          }
+    totalPriceEl.textContent = totalPrice;
+    totalQuantityEl.textContent = totalQuantity;
+ 
+};
 
-        function updateCartArticleAndPriceCounter() {
-            totalPriceEl.textContent = totalPrice;
-            totalQuantityEl.textContent = totalQuantity;
-        }
-    }
-}
-
-const inputs = [
-    {
-      name: "firstName",
-      el: document.getElementById("firstName"),
-      errorMsgEl: document.getElementById("firstNameErrorMsg"),
-      regex: /^[a-z,.'-]{2,}$/i,
-      errorMsg: "You have entered an invalid name format!",
-      validation: false
-    },
-    {
-      name: "lastName",
-      el: document.getElementById("lastName"),
-      errorMsgEl: document.getElementById("lastNameErrorMsg"),
-      regex: /^[a-z,.'-]{2,}$/i,
-      errorMsg: "You have entered an invalid name format!",
-      validation: false
-    },
-    {
-      name: "address",
-      el: document.getElementById("address"),
-      errorMsgEl: document.getElementById("addressErrorMsg"),
-      regex: /^([1-9]|\d{1,5}\/?\w{1,3}?|\d+\-\d+)[a-zA-Z]?\s(([a-zA-Z]+\-?[a-zA-Z]+|[a-zA-Z]+\'?[a-zA-Z]+?|[a-zA-Z]+\,|\&|[a-zA-Z]+\.)\s){1,}(([a-zA-Z]+\-?[a-zA-Z]+?)|([a-zA-Z]+\.))$/,
-      errorMsg: "You have entered an invalid address format!",
-      validation: false
-    },
-    {
-      name: "city",
-      el: document.getElementById("city"),
-      errorMsgEl: document.getElementById("cityErrorMsg"),
-      regex: /^([a-zA-Z\u0080-\u024F]+(?:. |-| |'))*[a-zA-Z\u0080-\u024F]*$/,
-      errorMsg: "You have entered an invalid city format!",
-      validation: false
-    },
-    {
-      name: "email",
-      el: document.getElementById("email"),
-      errorMsgEl: document.getElementById("emailErrorMsg"),
-      regex: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-      errorMsg: "You have entered an invalid email format!",
-      validation: false
-    },
-  ];
-  
-    for (const input of inputs)
-    input.el.addEventListener("input", () => {
-      if (input.regex.test(input.el.value)) {
-        input.errorMsgEl.textContent = "";
-        input.validation = true;
-      } else if (input.el.value === "" ) {
-        input.errorMsgEl.textContent = "This is required";
-        input.validation = false;
-      } else {
-        input.errorMsgEl.textContent = input.errorMsg;
-        input.validation = false;
-      }
-    });
-
-function validationCheck(listOfCartItems) {
-    let formIsValid = true;
-    for (const input of inputs)
-    if (input.el.value === "") {
-        input.errorMsgEl.textContent = "This is required";
-        formIsValid = false;
-    } else if (!input.validation) {
-        console.log("The",input.name,"is",input.validation);
-        formIsValid = false;
-        break
-    }
-    if (formIsValid === true) {
-    console.log("Success");
-    sendUserContactDetails(listOfCartItems);
-    }   
-}
-
-function sendUserContactDetails(listOfCartItems) {
-    const contact = {
-        firstName: document.getElementById("firstName").value,
-        lastName: document.getElementById("lastName").value,
-        address: document.getElementById("address").value,
-        city: document.getElementById("city").value,
-        email: document.getElementById("email").value,
-      };
-    const order = {};
-    order.contact = contact;
-    order.products = [];
-    for (let i = 0; i < listOfCartItems.length; i++) {
-        const cartItem = listOfCartItems[i];
-        console.log(cartItem[0]);
-        order.products.push(cartItem[0]); 
-    }
-    console.log(order);
-    const options = {
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(order),
-        }
-    
-    fetch("http://localhost:3000/api/products/order", options)
-        .then(res => res.json())
-        // I still don't get this part, response is res?
-        .then(response => location.href = `./confirmation.html?orderid=${response.orderId}`)
-        // localStorage.clear();
-        .catch((err) => console.log("Error: ", err));
-}
-
+/** This function has all the parts for placing an order, like:
+ *  checking all user input separately from user input, as well as all together when "order" is clicked, 
+ *  sending the contact and product details, then receiving the order id which will be displayed on the contact page, 
+ *  and finally resetting the cart. */
 function placeAnOrder(listOfCartItems) {
+    const inputs = [
+        {
+          name: "firstName",
+          el: document.getElementById("firstName"),
+          errorMsgEl: document.getElementById("firstNameErrorMsg"),
+          regex: /^[a-z,.'-]{2,}$/i,
+          errorMsg: "You have entered an invalid name format!",
+          validation: false
+        },
+        {
+          name: "lastName",
+          el: document.getElementById("lastName"),
+          errorMsgEl: document.getElementById("lastNameErrorMsg"),
+          regex: /^[a-z,.'-]{2,}$/i,
+          errorMsg: "You have entered an invalid name format!",
+          validation: false
+        },
+        {
+          name: "address",
+          el: document.getElementById("address"),
+          errorMsgEl: document.getElementById("addressErrorMsg"),
+          regex: /^([1-9]|\d{1,5}\/?\w{1,3}?|\d+\-\d+)[a-zA-Z]?\s(([a-zA-Z]+\-?[a-zA-Z]+|[a-zA-Z]+\'?[a-zA-Z]+?|[a-zA-Z]+\,|\&|[a-zA-Z]+\.)\s){1,}(([a-zA-Z]+\-?[a-zA-Z]+?)|([a-zA-Z]+\.))$/,
+          errorMsg: "You have entered an invalid address format!",
+          validation: false
+        },
+        {
+          name: "city",
+          el: document.getElementById("city"),
+          errorMsgEl: document.getElementById("cityErrorMsg"),
+          regex: /^([a-zA-Z\u0080-\u024F]{2,}(?:. |-| |'))*[a-zA-Z\u0080-\u024F]{2,}$/,
+          errorMsg: "You have entered an invalid city format!",
+          validation: false
+        },
+        {
+          name: "email",
+          el: document.getElementById("email"),
+          errorMsgEl: document.getElementById("emailErrorMsg"),
+          regex: /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
+          errorMsg: "You have entered an invalid email format!",
+          validation: false
+        },
+      ];
+
+      /** This eventlistener checks if the input is correct(matches the appropriate regular expression) on user input. */
+      for (const input of inputs)
+      input.el.addEventListener("input", () => {
+        if (input.regex.test(input.el.value)) {
+          input.errorMsgEl.textContent = "";
+          input.validation = true;
+        } else if (input.el.value === "" ) {
+          input.errorMsgEl.textContent = "This is required";
+          input.validation = false;
+        } else {
+          input.errorMsgEl.textContent = input.errorMsg;
+          input.validation = false;
+        };
+      });
+  
+    /** This function checks if all user input is correct(matches the appropriate regular expression) 
+     *  and called upon clicking the "order button". */
+    function validationCheck() {
+        let formIsValid = true;
+        for (const input of inputs)
+        if (input.el.value === "") {
+            input.errorMsgEl.textContent = "This is required";
+            formIsValid = false;
+        } else if (!input.validation) {
+            formIsValid = false;
+        }
+        if (formIsValid === true) {
+        return true;
+        };
+    };
+
+    /** This function sends the contact and product details to the API and gets a response.
+     *  That response is an order id which takes the user to the confirmation page and displays the order id.
+     *  Also clears the local storage. */
+    function sendUserContactDetails(listOfCartItems) {
+        const contact = {
+            firstName: document.getElementById("firstName").value,
+            lastName: document.getElementById("lastName").value,
+            address: document.getElementById("address").value,
+            city: document.getElementById("city").value,
+            email: document.getElementById("email").value,
+            };
+        const order = {};
+        order.contact = contact;
+        order.products = [];
+        for (let i = 0; i < listOfCartItems.length; i++) {
+            const cartItem = listOfCartItems[i];
+            order.products.push(cartItem[0]); 
+        };
+        console.log(order);
+        const options = {
+            method: 'POST',
+            headers: {
+            'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(order),
+            };
+        
+        fetch("http://localhost:3000/api/products/order", options)
+            .then(res => res.json())
+            .then(response => location.href = `./confirmation.html?orderid=${response.orderId}`)
+            localStorage.clear()
+            .catch((err) => {
+                console.log("Error: ", err);
+                alert("Error! Check if server is up and running");
+            });
+    };
+
+    /** Upon clicking the "Order" button, the form gets validated, if it's valid collect the user details and display an order id to the user
+     *  If there is no items in the cart, an error message pops up on the screen. */
     const orderButtonElement = document.getElementById("order");
-    orderButtonElement.addEventListener("click", function(){ 
-        if (totalQuantity === 0) {
+    orderButtonElement.addEventListener("click", function(){
+        if (totalQuantity.textContent === "0") {
             alert("There are no items in the cart, please go to the homepage to select your product first");
             return;
-        }
-        validationCheck(listOfCartItems);
-    })
-}
+        };
+        if (validationCheck())
+        sendUserContactDetails(listOfCartItems);
+    });
+};
 
+/** Main is an asynchronous function that calls the "buildCart" function to display the products selected by the user,
+ *  and another that paces the order for purchase. */
 const main = async () => {
     const listOfProducts = await fetchProducts();
     const listOfCartItems = getCartItemsFromLocalStorage();

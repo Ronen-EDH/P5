@@ -1,14 +1,8 @@
-let color = "";
-const productColorSelectorElement = document.getElementById("colors");
-const listOfCartItems = getCartItemsFromLocalStorage();
-console.log(listOfCartItems);
-
-// Loop through all the items of the API product table.
-// If the ID of a product from the API maches the ID placed/found in the Query String
-// insert relevant item details into the premade div's
-const buildProductEl = async (productId) => {
+/** Get the item from the API if it matches the ID passed into the query string,
+ *  then insert relevant product details into the premade div's.
+ *  Set the value to 1 for the item quantity selector. */
+const buildProductElement = async (productId,productColorSelectorElement) => {
     const product = await fetchProduct(productId);
-    console.log(product);
     const productImgElement = document.querySelector(".item__img");
     const productIdElement = document.getElementById("title");
     const productPriceElement = document.getElementById("price");
@@ -20,65 +14,53 @@ const buildProductEl = async (productId) => {
     productDescriptionElement.innerHTML = product.description;
     for (color of product.colors) {
         productColorSelectorElement.innerHTML += `<option value="${color}">${color}</option>`;
-    }
-}
+    };
+    const itemQuantityElement = document.getElementById("quantity");
+    itemQuantityElement.value = 1;
+};
 
-const itemQuantityElement = document.getElementById("quantity");
-itemQuantityElement.value = 1;
-const addToCartButton = document.getElementById("addToCart");
-
-function addProductToCart(productId) {
+ /** When you click "Add to cart", create an array of the product id,selected color value and quantity.
+ *  In case the id - selected color pair already exists in the array, update only the quantity.
+ *  If no color were selected, or try to add "0", or over a "100" articels to the cart an error message pops up on the screen */
+function addProductToCart(productId, listOfCartItems,productColorSelectorElement) {
     const addToCartButton = document.getElementById("addToCart");
     addToCartButton.addEventListener("click", function() {
-        // console.log(localStorage);
-        // console.log(itemQuantit);
-        const listOfCartItems = getCartItemsFromLocalStorage();
-        // getItemsFromLocalStorage();
-        console.log(listOfCartItems);
-        let itemQuantity = document.getElementById("quantity").value;
-        itemQuantity = +itemQuantity;
+        let itemQuantity = +(document.getElementById("quantity").value);
         const selectedColorValue = productColorSelectorElement.value;
-        if (selectedColorValue === "") {
-            alert("Product color has not been selected, please pick a color");
-            return;   
-        }
+        if (selectedColorValue === "") return alert("Product color has not been selected, please pick a color");
+        if (itemQuantity === 0) return alert('Cannot add 0 articles to the cart, please select a valid value');
+        if (itemQuantity > 100) return alert('Cannot add more than a 100 articles to the cart, please select a valid value');
         if (listOfCartItems.length === 0) {
-            listOfCartItems.push([productId, productColorSelectorElement.value, itemQuantity]);
+            listOfCartItems.push([productId, selectedColorValue, itemQuantity]);
         } else {
-            // if color already exist 
-            // change/add to the quantity
-
-            // console.log(listOfCartItems.find(findColor));
-            // function findColor(item) {
-            //     return item[0] === productColorSelectorElement.value;
-            // };
-
-            // Change this to a .find()
             for (let i = 0; i < listOfCartItems.length; i++) {
                 const cartItem = listOfCartItems[i];
-                if (cartItem.includes(productColorSelectorElement.value)) {
+                if (productId === cartItem[0] && cartItem.includes(selectedColorValue)) {
                     cartItem[2] += itemQuantity;
                     itemQuantity = cartItem[2];
                     cartItem.pop();
                     cartItem.push(itemQuantity);
                     break;
                 } else if(i === listOfCartItems.length - 1) {
-                    listOfCartItems.push([productId, productColorSelectorElement.value, itemQuantity]);
+                    listOfCartItems.push([productId, selectedColorValue, itemQuantity]);
                     break;
-                }
-            }
-        }
+                };
+            };
+        };
         setItemsToLocalStorage(listOfCartItems);
-        console.log("Local storage after: ",localStorage);
-    })
-}
+    });
+};
 
+/** Main is an asynchronous function that calls the "buildProductElement" function to display the product selected on the home page,
+ *  and another that adds the selected product to the cart. */
   const main = async () => {
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
     const productId = urlParams.get("id");
     // const productId = new URLSearchParams(window.location.search).get("id");
-    buildProductEl(productId);
-    addProductToCart(productId);
+    const listOfCartItems = getCartItemsFromLocalStorage();
+    const productColorSelectorElement = document.getElementById("colors");
+    buildProductElement(productId, productColorSelectorElement);
+    addProductToCart(productId, listOfCartItems, productColorSelectorElement);
   };
   main();

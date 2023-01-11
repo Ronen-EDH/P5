@@ -1,6 +1,6 @@
-/* Loop through all the items of the API product table.
-For each item create an HTML "a" element & "article" element with information from the API,
-and place the "article" element as child of "a" element and "a" as child of the HTML element with the ID of "items".*/
+/** Loop through all the items of the API product table.
+ *  For each item, create an HTML "a" element & "article" element with information from the API,
+ *  and place the "article" element as child of "a" element, and "a" as child of the HTML element with the ID of "items".*/
 function insertProducts(listOfProducts) {
     const itemsEL = document.getElementById("items");
     for (let i = 0; i < listOfProducts.length; i++) {
@@ -12,8 +12,8 @@ function insertProducts(listOfProducts) {
             <img src="${product.imageUrl}" alt="${product.altTxt}, ${product.name}">
             <h3 class="productName">${product.name}</h3>
             <p class="productDescription">${product.description}</p
-            `
-        itemsEL.appendChild(anchorElement)
+            `;
+        itemsEL.appendChild(anchorElement);
         anchorElement.appendChild(articleELement);
     }
 }

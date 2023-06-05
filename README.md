@@ -42,15 +42,16 @@ of them must be approved before the data is sent to the server.
 
 JavaScript, localStorage, helper functions
 
-## Setup
+## Setup for Windows
 
 1. Clone the repo
-2. Open a terminal (Linux/Mac) or command prompt/PowerShell (Windows) 
-3. Navigate into the back folder and from there run `npm install`
-5. Run `node server` from the same folder
+2. You'll need Node Package Manager for the next step so if you don't have it here is a link how to install it: https://docs.npmjs.com/downloading-and-installing-node-js-and-npm
+3. Here you can use Node.js Command Prompt or (my preferred way) follow this guide to make your npm commands globally available: https://dev.to/supritha/npm-is-not-recognized-as-internal-or-external-command-solution-o1n
+4. Using Node.js Command Prompt - or a normal Command Prompt/PowerShell if you did the second option - navigate into the back folder and from there run `npm install`
+5. Run `node server` from the same folder 
 6. You have two options here: 
   - If you have VS Code, install the Live Server extension (https://marketplace.visualstudio.com/items?itemName=ritwickdey.LiveServer) and then Click the Go Live button on your status bar(bottom right by default) and then on the pop-up window navigate to the html folder(../front/html)
-  - The other option is to just open up the project directory, navigate to the index.html file  (../P5-Web-Dev-Kanap-master/front/html/index.html)and open the index.html file
+  - The other option is to just open up the project directory, navigate to the index.html file  (../P5-master/front/html/index.html)and open the index.html file
 
 ### Test plan
 
